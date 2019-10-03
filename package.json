@@ -1,0 +1,14 @@
+{
+  "name": "duoshuo-to-valine",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "json-bigint": "^0.3.0"
+  }
+}
