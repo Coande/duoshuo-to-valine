@@ -1,19 +1,23 @@
 const fs = require('fs');
 const JSONbig = require('json-bigint');
 
+const INPUTFILE = 'data/duoshuo-raw.json';
+const OUTPUTFILE = 'data/duoshuo-valine.json';
+const OUTPUTLOST = 'data/duoshuo-lost.json';
+
 // 同步读取
-const data = fs.readFileSync('data/duoshuo-raw.json');
+const data = fs.readFileSync(INPUTFILE);
 
 const jsonData = JSONbig.parse(data);
 
 // 排序
-// jsonData.posts.sort((a, b) => {
-// 	return new Date(a.created_at).getTime() - new Date(b.created_at).getTime();
-// });
+jsonData.posts.sort((a, b) => {
+	return new Date(a.created_at).getTime() - new Date(b.created_at).getTime();
+});
 
 // 获取最后一条评论
-// const obj = jsonData.threads[jsonData.threads.length - 1];
-// console.log(new Date(obj.created_at));
+const obj = jsonData.posts[jsonData.threads.length - 1];
+console.log("最后一条评论时间：", new Date(obj.created_at));
 
 // 存放 valine 格式对象
 const jsonResult = [];
@@ -69,8 +73,13 @@ jsonData.posts.forEach(item => {
   });
 });
 
-fs.writeFileSync('data/duoshuo-valine.json', JSON.stringify(jsonResult, null, 2));
-fs.writeFileSync(
-  'data/duoshuo-lost.json',
-  JSON.stringify(postOfLostThread, null, 2)
-);
+fs.writeFileSync(OUTPUTFILE, JSON.stringify(jsonResult, null, 2));
+console.log('转换后的文件已输出到：', OUTPUTFILE)
+
+if (postOfLostThread.length) {
+  fs.writeFileSync(
+    OUTPUTLOST,
+    JSON.stringify(postOfLostThread, null, 2)
+  );
+  console.log('部分评论找不到对应文章，已输出到：', OUTPUTLOST);
+}
