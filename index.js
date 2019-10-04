@@ -16,7 +16,7 @@ jsonData.posts.sort((a, b) => {
 });
 
 // 获取最后一条评论
-const obj = jsonData.posts[jsonData.threads.length - 1];
+const obj = jsonData.posts[jsonData.posts.length - 1];
 console.log("最后一条评论时间：", new Date(obj.created_at));
 
 // 存放 valine 格式对象
@@ -96,7 +96,10 @@ console.log('转换后的文件已输出到：', OUTPUTFILE)
 if (postOfLostThread.length) {
   fs.writeFileSync(
     OUTPUTLOST,
-    JSON.stringify(postOfLostThread, null, 2)
+    JSON.stringify({
+      threads: jsonData.threads,
+      posts: postOfLostThread
+    }, null, 2)
   );
   console.log('部分评论找不到对应文章，已输出到：', OUTPUTLOST);
 }
