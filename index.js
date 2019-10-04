@@ -25,6 +25,21 @@ const jsonResult = [];
 // 存放找不到 thread 的 post 对象
 const postOfLostThread = [];
 
+function getAtMan(pid) {
+  if (!pid) {
+    return;
+  }
+  let atMan;
+  jsonData.posts.forEach(post => {
+    if (post.post_id.toString() == pid) {
+      const nickname = post.author_name;
+      const comment_id = post.post_id.toString();
+      atMan = `<a class="at" href="#${comment_id}">@${nickname} </a> , `;
+    }
+  });
+  return atMan;
+}
+
 jsonData.posts.forEach(item => {
   // 根据 thread_id 找 thread，从而得到 url，根据 url 得到 pathname
   const foundThread = jsonData.threads.find(
@@ -36,6 +51,11 @@ jsonData.posts.forEach(item => {
     return;
   }
   const pathname = decodeURIComponent(new URL(foundThread.url).pathname);
+  const pid = item.parents && item.parents.length
+    ? item.parents[item.parents.length - 1].toString()
+    : undefined;
+  const atMan = getAtMan(pid);
+  const comment = atMan ? atMan + item.message : item.message;
 
   // 构造 valine 格式
   jsonResult.push({
@@ -51,12 +71,9 @@ jsonData.posts.forEach(item => {
       __type: 'Date',
       iso: new Date(item.created_at).toISOString()
     },
-    pid:
-      item.parents && item.parents.length
-        ? item.parents[item.parents.length - 1].toString()
-        : undefined,
+    pid,
     link: item.author_url,
-    comment: item.message,
+    comment,
     url: pathname,
     rid:
       item.parents && item.parents.length
